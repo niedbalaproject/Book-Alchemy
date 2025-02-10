@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Add Book</title>
+</head>
+<body>
+
+    <!-- Button to go back to homepage -->
+    <a href="{{ url_for('home') }}" style="display: inline-block; margin-bottom: 10px;">
+        <button>🏠 Go to Library</button>
+    </a>
+
+    <h1>Add a New Book</h1>
+
+    <form method="POST" action="{{ url_for('add_book') }}">
+        <label for="isbn">ISBN:</label>
+        <input type="text" id="isbn" name="isbn" required><br>
+
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br>
+
+        <label for="publication_year">Publication Year:</label>
+        <input type="number" id="publication_year" name="publication_year" required><br>
+
+        <label for="author">Author:</label>
+        <select id="author" name="author_id" onchange="toggleNewAuthorInput()">
+            <option value="">-- Select an Author --</option>
+            {% for author in authors %}
+                <option value="{{ author.id }}">{{ author.name }}</option>
+            {% endfor %}
+            <option value="new">➕ Add New Author</option>
+        </select><br>
+
+        <!-- Hidden New Author Input -->
+        <div id="new_author_input" style="display: none;">
+            <label for="new_author_name">New Author Name:</label>
+            <input type="text" id="new_author_name" name="new_author_name"><br>
+        </div>
+
+        <button type="submit">Add Book</button>
+    </form>
+
+    <script>
+        function toggleNewAuthorInput() {
+            let authorDropdown = document.getElementById("author");
+            let newAuthorInput = document.getElementById("new_author_input");
+
+            if (authorDropdown.value === "new") {
+                newAuthorInput.style.display = "block";
+                document.getElementById("new_author_name").setAttribute("required", "true");
+            } else {
+                newAuthorInput.style.display = "none";
+                document.getElementById("new_author_name").removeAttribute("required");
+            }
+        }
+    </script>
+
+</body>
+</html>
