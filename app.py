@@ -19,6 +19,13 @@ db.init_app(app)
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
+    """
+    Handles adding a new author to the database.
+
+    GET: Renders the add_author.html template.
+    POST: Retrieves form data, creates a new Author object,
+          saves it to the database, and returns a success message.
+    """
     if request.method == "POST":
         name = request.form["name"]
         birth_date_str = request.form["birthdate"]
@@ -38,13 +45,20 @@ def add_author():
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
+    """
+    Handles adding a new book to the database.
+
+    GET: Renders the add_book.html template with a list of authors.
+    POST: Retrieves form data, creates a new Book object,
+          assigns an existing or new author, and saves it to the database.
+    """
     if request.method == 'POST':
         isbn = request.form['isbn']
         title = request.form['title']
         publication_year = request.form['publication_year']
         author_id = request.form['author_id']
         new_author_name = request.form.get('new_author_name')
-        rating = request.form.get('rating')  # ✅ Get rating from the form
+        rating = request.form.get('rating')  # Get rating from the form
 
         # If "Add New" is selected, create a new author
         if author_id == "new" and new_author_name:
@@ -59,7 +73,7 @@ def add_book():
             title=title,
             publication_year=publication_year,
             author_id=author_id,
-            rating=int(rating) if rating else None  # ✅ Convert rating to integer
+            rating=int(rating) if rating else None  # Convert rating to integer
         )
         db.session.add(new_book)
         db.session.commit()
@@ -76,6 +90,9 @@ def delete_book(book_id):
     """
     Deletes a book from the database.
     If the author has no other books, delete the author as well.
+
+    :param book_id: ID of the book to be deleted.
+    :return: Redirects to the home page after deletion.
     """
     book = Book.query.get_or_404(book_id)  # get the book or return 404 if not found
     author = book.author  # get the author before deleting the book
@@ -95,7 +112,9 @@ def delete_book(book_id):
 @app.route('/book/<int:book_id>')
 def book_detail(book_id):
     """
-    Display the details of a specific book.
+    Displays the details of a specific book.
+    :param book_id: ID of the book to be displayed.
+    :return: Renders the book_detail.html template.
     """
     book = Book.query.get_or_404(book_id)
     return render_template('book_detail.html', book=book)
@@ -105,6 +124,9 @@ def book_detail(book_id):
 def rate_book(book_id):
     """
     Handles rating submission for a book.
+
+    :param book_id: ID of the book being rated.
+    :return: Redirects to home page with a success or error message.
     """
     book = Book.query.get_or_404(book_id)
     rating = request.form.get('rating')
@@ -123,7 +145,10 @@ def rate_book(book_id):
 @app.route('/author/<int:author_id>')
 def author_detail(author_id):
     """
-    Display the details of a specific author.
+    Displays the details of a specific author.
+
+    :param author_id: ID of the author to be displayed.
+    :return: Renders the author_detail.html template.
     """
     author = Author.query.get_or_404(author_id)
     books = Book.query.filter_by(author_id=author.id).all()
@@ -134,7 +159,8 @@ def author_detail(author_id):
 def delete_author(author_id):
     """
     Deletes an author and all books associated with them.
-    Redirects to the homepage after deletion.
+    :param author_id: ID of the author to be deleted.
+    :return: Redirects to the homepage after deletion.
     """
     author = Author.query.get_or_404(author_id)
 
@@ -148,8 +174,10 @@ def delete_author(author_id):
 @app.route('/')
 def home():
     """
-    Display the homepage with books sorted by title or author name.
+    Displays the homepage with books sorted by title or author name.
     Includes search features for books and authors.
+
+    :return: Renders the home.html template with sorted and filtered book data.
     """
     sort_by = request.args.get('sort_by', 'title')  # Default sorting
     search_query = request.args.get('search', '').strip()  # Get book search query
@@ -178,4 +206,4 @@ def home():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5001)

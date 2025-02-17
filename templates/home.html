@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>My Library</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
 
@@ -19,7 +19,7 @@
         </div>
 
         <!-- Sorting Form -->
-        <form method="GET" action="/">
+        <form id="sort-form" method="GET" action="/">
             <label for="sort_by">Sort by:</label>
             <select name="sort_by" id="sort_by" onchange="this.form.submit()">
                 <option value="title">Title</option>
@@ -27,59 +27,49 @@
             </select>
         </form>
 
-        <!-- Search Form (Books & Authors -->
-        <form method="GET" action="/">
-            <label for="search">Search for a book:</label>
-            <input type="text" id="search" name="search" placeholder="Enter book title..." value="{{ request.args.get('search', '') }}">
-            <button type="submit">🔍 Search</button>
-        </form>
-
-        <form method="GET" action="/">
-            <label for="search_author">Search for an author:</label>
-            <input type="text" id="search_author" name="search_author" placeholder="Enter author name..." value="{{ request.args.get('search_author', '') }}">
-            <button type="submit">🔍 Search</button>
-        </form>
-
         <!-- Book List -->
-        {% if books %}
-            {% for book in books %}
-                <div class="book-item">
-                    <h3>
-                        <a href="{{ url_for('book_detail', book_id=book.id) }}">{{ book.title }}</a> -
-                        <a href="{{ url_for('author_detail', author_id=book.author.id) }}">{{ book.author.name }}</a>
-                    </h3>
+            {% if books %}
+                {% for book in books %}
+                    <div class="book-item">
+                        <h3>
+                            <a href="{{ url_for('book_detail', book_id=book.id) }}">{{ book.title }}</a> -
+                            <a href="{{ url_for('author_detail', author_id=book.author.id) }}">{{ book.author.name }}</a>
+                        </h3>
 
-                    <!-- Display Current Rating -->
-                    <p>⭐ Rating: {{ book.rating if book.rating else "Not Rated" }}</p>
+                        <!-- Display Current Rating -->
+                        <p>⭐ Rating: {{ book.rating if book.rating else "Not Rated" }}</p>
 
-                    <!-- Update Rating Form -->
-                    <form action="{{ url_for('rate_book', book_id=book.id) }}" method="POST">
-                        <label for="rating_{{ book.id }}">Update Rating:</label>
-                        <select name="rating" id="rating_{{ book.id }}">
-                            <option value="">Select</option>
-                            {% for i in range(1, 11) %}
-                                <option value="{{ i }}">{{ i }}</option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit">Submit</button>
-                    </form>
+                        <!-- Update Rating Form -->
+                        <form action="{{ url_for('rate_book', book_id=book.id) }}" method="POST">
+                            <label for="rating_{{ book.id }}">Update Rating:</label>
+                            <select name="rating" id="rating_{{ book.id }}">
+                                <option value="">Select</option>
+                                {% for i in range(1, 11) %}
+                                    <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit">Submit</button>
+                        </form>
 
-                    <!-- Delete Book Button -->
-                    <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this book?');">
-                        <button class="delete">🗑 Delete Book</button>
-                    </form>
+                        <!-- Button Container for Delete Book and Delete Author -->
+                        <div class="button-container">
+                            <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this book?');">
+                                <button class="delete">🗑 Delete Book</button>
+                            </form>
 
-                    <!-- Delete Author Button (appears only once per author) -->
-                    {% if loop.first or book.author.id != books[loop.index0 - 1].author.id %}
-                    <form action="{{ url_for('delete_author', author_id=book.author.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this author and all their books?');">
-                        <button class="delete">🗑 Delete Author</button>
-                    </form>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No books found matching your search.</p>
-        {% endif %}
+                            <!-- Delete Author Button (appears only once per author) -->
+                            {% if loop.first or book.author.id != books[loop.index0 - 1].author.id %}
+                            <form action="{{ url_for('delete_author', author_id=book.author.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this author and all their books?');">
+                                <button class="delete-author">🗑 Delete Author</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No books found matching your search.</p>
+            {% endif %}
+
 
         <script>
             // Maintain sorting selection

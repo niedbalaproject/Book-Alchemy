@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Add Author</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    <div class="center-container">
+        <h1 class="page-title">Add Author</h1>
+        <form method="post">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
 
-    <!-- Button to go back to homepage -->
-    <a href="{{ url_for('home') }}" style="display: inline-block; margin-bottom: 10px;">
-        <button>🏠 Go to Library</button>
-    </a>
+            <div class="form-group">
+                <label for="birthdate">Birthdate:</label>
+                <input type="date" id="birthdate" name="birthdate" required>
+            </div>
 
-    <h1>Add a New Author</h1>
+            <div class="form-group">
+                <label for="date_of_death">Date of Death (Optional):</label>
+                <input type="date" id="date_of_death" name="date_of_death">
+            </div>
 
-    <form method="POST" action="{{ url_for('add_author') }}">
-        <label for="name">Author Name:</label>
-        <input type="text" id="name" name="name" required><br>
-
-        <label for="birthdate">Birth Date:</label>
-        <input type="date" id="birthdate" name="birthdate" required><br>
-
-        <label for="date_of_death">Date of Death (optional):</label>
-        <input type="date" id="date_of_death" name="date_of_death"><br>
-
-        <button type="submit">Add Author</button>
-    </form>
-
+            <button type="submit">Add Author</button>
+        </form>
+    </div>
 </body>
 </html>
